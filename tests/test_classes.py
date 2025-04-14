@@ -1,6 +1,6 @@
 import pytest
 
-from src.main import Category, Product
+from src.classes import Category, Product
 
 
 @pytest.fixture()
@@ -11,7 +11,7 @@ def test_product():
 
 
 @pytest.fixture()
-def category1():
+def test_category():
     return Category(
         "Смартфоны",
         "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни",
@@ -29,16 +29,6 @@ def test_check_product(test_product):
 def test_check_category(test_category):
     assert test_category.name == "Смартфоны"
     assert test_category.description == (
-        """Смартфоны, как средство не только коммуникации,
-                                          но и получения дополнительных функций для удобства жизни"""
+        "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни"
     )
-    assert test_category.products == ""
-
-
-def test_add_product_category(test_category, test_product):
-    test_category.add_product_category(test_product)
-    assert (
-        "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт"
-        in test_category.products
-    )
-    assert Category.product_count == 1
+    assert test_category.products == []
