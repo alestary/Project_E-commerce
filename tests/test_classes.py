@@ -27,6 +27,6 @@ def test_check_category(test_category):
 
 
 def test_add_product_category(test_category, test_product):
-    test_category.add_product_category(test_product)
+    test_category.add_product(test_product)
     assert "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт" in test_category.products
     assert Category.product_count == 1

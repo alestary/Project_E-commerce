@@ -18,9 +18,9 @@ class Product:
     @price.setter
     def price(self, new_price):
         """Устанавливает новую цену продукта"""
-        if new_price > 0:
+        if new_price >= 0:
             self.__price = new_price
-        else:
+        elif new_price < 0:
             print("Цена не должна быть нулевая или отрицательная")
 
 
@@ -30,20 +30,30 @@ class Category:
     __products: list[Product]
     category_count = 0
     product_count = 0
-
     def __init__(self, name, description):
         self.name = name
         self.description = description
         self.__products = []
         Category.category_count += 1
 
-    def add_product_category(self, product):
-        """Счетчик продуктов"""
-        if isinstance(product, Product):
-            self.__products.append(product)
+    def __add__(self, other):
+        if isinstance(other, Product):
+            self.__products.append(other)
             Category.product_count += 1
         else:
-            print("Можно добавлять только объекты типа Product")
+            return "Можно добавлять только объекты типа Product"
+
+    # def add_product(self, product):
+    #     """Счетчик продуктов"""
+    #     if isinstance(product, Product):
+    #         self.__products.append(product)
+    #         Category.product_count += 1
+    #     else:
+    #         print("Можно добавлять только объекты типа Product")
+
+    def add_product(self, product):
+        """Счетчик продуктов"""
+        Category.__add__(self, product)
 
     @property
     def products(self):
