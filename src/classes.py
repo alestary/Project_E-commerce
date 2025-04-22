@@ -30,30 +30,20 @@ class Category:
     __products: list[Product]
     category_count = 0
     product_count = 0
+
     def __init__(self, name, description):
         self.name = name
         self.description = description
         self.__products = []
         Category.category_count += 1
 
-    def __add__(self, other):
-        if isinstance(other, Product):
-            self.__products.append(other)
-            Category.product_count += 1
-        else:
-            return "Можно добавлять только объекты типа Product"
-
-    # def add_product(self, product):
-    #     """Счетчик продуктов"""
-    #     if isinstance(product, Product):
-    #         self.__products.append(product)
-    #         Category.product_count += 1
-    #     else:
-    #         print("Можно добавлять только объекты типа Product")
-
     def add_product(self, product):
         """Счетчик продуктов"""
-        Category.__add__(self, product)
+        if isinstance(product, Product):
+            self.__products.append(product)
+            Category.product_count += 1
+        else:
+            print("Можно добавлять только объекты типа Product")
 
     @property
     def products(self):
@@ -65,5 +55,5 @@ class Category:
     @classmethod
     def new_product(cls, product_data):
         """Создает новый продукт на основе словаря."""
-        return Product(name=product_data['name'], description=product_data['description'], price=product_data['price'],
+        return cls(name=product_data['name'], description=product_data['description'], price=product_data['price'],
                        quantity=product_data['quantity'])
