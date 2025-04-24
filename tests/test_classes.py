@@ -23,10 +23,11 @@ def test_check_product(test_product):
 def test_check_category(test_category):
     assert test_category.name == "Смартфоны"
     assert (test_category.description == "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни")
-    assert test_category.products == ""
+    assert test_category.get_products() == []
 
 
 def test_add_product_category(test_category, test_product):
     test_category.add_product(test_product)
-    assert "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт" in test_category.products
+    print(test_category.get_products())
+    assert "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт." in [i.__str__(i.name, i.price, i.quantity) for i in test_category.get_products()]
     assert Category.product_count == 1
