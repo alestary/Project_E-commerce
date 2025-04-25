@@ -26,8 +26,17 @@ def test_check_category(test_category):
     assert test_category.get_products() == []
 
 
-def test_add_product_category(test_category, test_product):
+def test_str_product(test_product):
+    assert str(test_product) == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт."
+
+
+def test_str_category(test_category, test_product):
     test_category.add_product(test_product)
-    print(test_category.get_products())
-    assert "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт." in [i.__str__(i.name, i.price, i.quantity) for i in test_category.get_products()]
-    assert Category.product_count == 1
+    assert str(test_category) == "Смартфоны, количество продуктов: 5 шт."
+
+
+def test_product_addition(test_product):
+    product2 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
+    result = test_product + product2
+    assert result == 180000.0 * 10
+

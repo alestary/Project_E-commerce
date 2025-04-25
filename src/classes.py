@@ -10,8 +10,14 @@ class Product:
         self.__price = price
         self.quantity = quantity
 
-    def __str__(self, name, price, quantity):
-        return f"{name}, {price} руб. Остаток: {quantity} шт."
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Сумма всех товаров на складе"""
+        if isinstance(other, Product):
+            return self.price * self.quantity + other.price * other.quantity
+        raise TypeError("Операнд справа должен иметь тип Product")
 
     @property
     def price(self):
@@ -39,6 +45,7 @@ class Category:
     __products: list[Product]
     category_count = 0
     product_count = 0
+    product_quantity = 0
 
     def __init__(self, name, description):
         self.name = name
@@ -56,9 +63,11 @@ class Category:
     def add_product(self, product):
         """Счетчик продуктов"""
         Category.__add__(self, product)
+        self.product_quantity += product.quantity
+        return self.product_quantity
 
-    def __str__(self, name, product_count):
-        return f"{name}, количество продуктов: {product_count} шт."
+    def __str__(self):
+        return f"{self.name}, количество продуктов: {self.product_quantity} шт."
 
     def get_products(self):
         return self.__products
