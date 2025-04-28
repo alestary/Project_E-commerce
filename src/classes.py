@@ -15,9 +15,10 @@ class Product:
 
     def __add__(self, other):
         """Сумма всех товаров на складе"""
-        if isinstance(other, Product):
+        if type(self) != type(other):
+            raise TypeError("Нельзя складывать товары разных классов")
+        else:
             return self.price * self.quantity + other.price * other.quantity
-        raise TypeError("Операнд справа должен иметь тип Product")
 
     @property
     def price(self):
@@ -58,7 +59,7 @@ class Category:
             self.__products.append(other)
             Category.product_count += 1
         else:
-            return "Можно добавлять только объекты типа Product"
+            raise TypeError("Можно добавлять только объекты типа Product")
 
     def add_product(self, product):
         """Счетчик продуктов"""
@@ -71,3 +72,29 @@ class Category:
 
     def get_products(self):
         return self.__products
+
+
+class Smartphone(Product):
+    efficiency: int
+    model: str
+    memory: int
+    color: str
+
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    country: str
+    germination_period: int
+    color: str
+
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
