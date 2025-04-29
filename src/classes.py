@@ -10,6 +10,16 @@ class Product:
         self.__price = price
         self.quantity = quantity
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Сумма всех товаров на складе"""
+        if type(self) != type(other):
+            raise TypeError("Нельзя складывать товары разных классов")
+        else:
+            return self.price * self.quantity + other.price * other.quantity
+
     @property
     def price(self):
         """Возвращает цену продукта"""
@@ -23,6 +33,12 @@ class Product:
         elif new_price < 0:
             print("Цена не должна быть нулевая или отрицательная")
 
+    @classmethod
+    def new_product(cls, product_data):
+        """Создает новый продукт на основе словаря."""
+        return cls(name=product_data['name'], description=product_data['description'], price=product_data['price'],
+                   quantity=product_data['quantity'])
+
 
 class Category:
     name: str
@@ -30,6 +46,7 @@ class Category:
     __products: list[Product]
     category_count = 0
     product_count = 0
+    product_quantity = 0
 
     def __init__(self, name, description):
         self.name = name
@@ -37,23 +54,47 @@ class Category:
         self.__products = []
         Category.category_count += 1
 
-    def add_product(self, product):
-        """Счетчик продуктов"""
-        if isinstance(product, Product):
-            self.__products.append(product)
+    def __add__(self, other):
+        if isinstance(other, Product):
+            self.__products.append(other)
             Category.product_count += 1
         else:
-            print("Можно добавлять только объекты типа Product")
+            raise TypeError("Можно добавлять только объекты типа Product")
 
-    @property
-    def products(self):
-        """Геттер для продуктов"""
-        return "\n".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
-            for product in self.__products)
+    def add_product(self, product):
+        """Счетчик продуктов"""
+        Category.__add__(self, product)
+        self.product_quantity += product.quantity
+        return self.product_quantity
 
-    @classmethod
-    def new_product(cls, product_data):
-        """Создает новый продукт на основе словаря."""
-        return cls(name=product_data['name'], description=product_data['description'], price=product_data['price'],
-                       quantity=product_data['quantity'])
+    def __str__(self):
+        return f"{self.name}, количество продуктов: {self.product_quantity} шт."
+
+    def get_products(self):
+        return self.__products
+
+
+class Smartphone(Product):
+    efficiency: int
+    model: str
+    memory: int
+    color: str
+
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    country: str
+    germination_period: int
+    color: str
+
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
