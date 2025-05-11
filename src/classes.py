@@ -29,6 +29,8 @@ class Product(BaseProduct, CreationInfoMixin):
     quantity: int
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.name = name
         self.description = description
         self.__price = price
@@ -76,6 +78,7 @@ class Product(BaseProduct, CreationInfoMixin):
             raise ValueError("Недостаточно товара на складе")
         self.quantity -= amount
 
+
 class Category:
     name: str
     description: str
@@ -91,11 +94,16 @@ class Category:
         Category.category_count += 1
 
     def __add__(self, other):
-        if isinstance(other, Product):
-            self.__products.append(other)
-            Category.product_count += 1
-        else:
-            raise TypeError("Можно добавлять только объекты типа Product")
+        try:
+            if isinstance(other, Product):
+                self.__products.append(other)
+                Category.product_count += 1
+            else:
+                raise TypeError("Можно добавлять только объекты типа Product или его наследников.")
+        except ValueError as e:
+            print(e)
+        finally:
+            print("Обработка добавления товара завершена")
 
     def add_product(self, product):
         """Счетчик продуктов"""
@@ -125,6 +133,13 @@ class Smartphone(Product):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, description={self.description}, price={self.price}, quantity={self.quantity}, efficiency={self.efficiency}, model={self.model}, memory={self.memory}, color={self.color})"
+
+    def middle_price(self):
+        try:
+            total_price = sum(product.price for product in self.__products)
+            return total_price / len(self.__products)
+        except ZeroDivisionError:
+            return 0
 
 
 class LawnGrass(Product, CreationInfoMixin):
