@@ -1,14 +1,41 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class CreationInfoMixin:
+    def __init__(self, *args, **kwargs):
+        print(f"Создан объект класса {self.__class__.__name__} с параметрами: {args}, {kwargs}")
+
+    def __repr__(self):
+        try:
+            return f"{self.__class__.__name__}(name={self.name}, description={self.description}, price={self.price}, quantity={self.quantity})"
+        except AttributeError:
+            return f"{self.__class__.__name__}(custom object)"
+
+
+class BaseProduct(ABC):
+    @abstractmethod
+    def get_total_price(self):
+        pass
+
+    @abstractmethod
+    def reduce_quantity(self, amount):
+        pass
+
+
+class Product(BaseProduct, CreationInfoMixin):
     name: str
     description: str
     price: int
     quantity: int
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.name = name
         self.description = description
         self.__price = price
         self.quantity = quantity
+        CreationInfoMixin.__init__(self, name, description, price, quantity)
 
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
@@ -39,6 +66,18 @@ class Product:
         return cls(name=product_data['name'], description=product_data['description'], price=product_data['price'],
                    quantity=product_data['quantity'])
 
+    def get_total_price(self) -> int:
+        """Возвращает общую стоимость продукта (цена * количество)."""
+        return self.price * self.quantity
+
+    def reduce_quantity(self, amount: int):
+        """Уменьшает количество продукта на указанное значение."""
+        if amount < 0:
+            raise ValueError("Количество не может быть отрицательным")
+        if self.quantity < amount:
+            raise ValueError("Недостаточно товара на складе")
+        self.quantity -= amount
+
 
 class Category:
     name: str
@@ -55,11 +94,16 @@ class Category:
         Category.category_count += 1
 
     def __add__(self, other):
-        if isinstance(other, Product):
-            self.__products.append(other)
-            Category.product_count += 1
-        else:
-            raise TypeError("Можно добавлять только объекты типа Product")
+        try:
+            if isinstance(other, Product):
+                self.__products.append(other)
+                Category.product_count += 1
+            else:
+                raise TypeError("Можно добавлять только объекты типа Product или его наследников.")
+        except ValueError as e:
+            print(e)
+        finally:
+            print("Обработка добавления товара завершена")
 
     def add_product(self, product):
         """Счетчик продуктов"""
@@ -87,8 +131,18 @@ class Smartphone(Product):
         self.memory = memory
         self.color = color
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name}, description={self.description}, price={self.price}, quantity={self.quantity}, efficiency={self.efficiency}, model={self.model}, memory={self.memory}, color={self.color})"
 
-class LawnGrass(Product):
+    def middle_price(self):
+        try:
+            total_price = sum(product.price for product in self.__products)
+            return total_price / len(self.__products)
+        except ZeroDivisionError:
+            return 0
+
+
+class LawnGrass(Product, CreationInfoMixin):
     country: str
     germination_period: int
     color: str
@@ -98,3 +152,6 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name}, description={self.description}, price={self.price}, quantity={self.quantity}, country={self.country}, germination_period={self.germination_period}, color={self.color})"

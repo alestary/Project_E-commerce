@@ -97,3 +97,30 @@ def test_lawn_grass_init(test_lawn_grass):
 def test_lawn_grass_inheritance(test_lawn_grass):
     assert isinstance(test_lawn_grass, Product)
     assert str(test_lawn_grass) == "Газонная трава, 500.0 руб. Остаток: 20 шт."
+
+
+def test_creation_info_mixin_repr(test_product, test_smartphone, test_lawn_grass):
+    """Проверяет строковое представление объектов."""
+    assert repr(test_product) == "Product(name=Samsung Galaxy S23 Ultra, description=256GB, Серый цвет, 200MP камера, price=180000.0, quantity=5)"
+    assert repr(test_smartphone) == "Smartphone(name=Samsung Galaxy S23 Ultra, description=256GB, Серый цвет, 200MP камера, price=180000.0, quantity=5, efficiency=95.5, model=S23 Ultra, memory=256, color=Серый)"
+    assert repr(test_lawn_grass) == "LawnGrass(name=Газонная трава, description=Элитная трава для газона, price=500.0, quantity=20, country=Россия, germination_period=7 дней, color=Зеленый)"
+
+
+def test_product_get_total_price(test_product):
+    """Проверяет метод get_total_price."""
+    assert test_product.get_total_price() == 180000 * 5
+
+
+def test_product_reduce_quantity(test_product):
+    """Проверяет метод reduce_quantity."""
+    test_product.reduce_quantity(3)
+    assert test_product.quantity == 2
+    with pytest.raises(ValueError, match="Недостаточно товара на складе"):
+        test_product.reduce_quantity(3)
+    with pytest.raises(ValueError, match="Количество не может быть отрицательным"):
+        test_product.reduce_quantity(-1)
+
+
+def test_zero_product():
+    with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+        Product("Test Product", "Description", 100.0, 0)
